@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # Nom du service dans le réseau Docker
+  web:
+    # On construit l'image à partir du dossier courant
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Nom de l'image pour la clarté dans 'docker images'
+    image: nuxt-static-prod:v1
+    
+    # Le nom du conteneur final
+    container_name: mon-site-nuxt-prod
+    
+    # Mapping des ports [Hôte]:[Conteneur]
+    ports:
+      - "8080:80"
+    
+    # Politique de redémarrage : redémarre toujours sauf si on l'arrête manuellement
+    restart: unless-stopped
+    
+    # Optimisation : Variables d'environnement (si besoin pour Nginx/Nuxt)
+    environment:
+      - NODE_ENV=production
+    
+    # Healthcheck : Vérifie que Nginx répond bien (Best Practice DevOps)
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
